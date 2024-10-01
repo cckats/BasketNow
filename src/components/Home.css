@@ -1,0 +1,9 @@
+.Main{
+    display: flex;
+    flex-direction: column;
+}
+.map{
+    width: 99vw;
+    height: calc( 90vh - 78px);
+    min-height: 450px;
+}

@@ -1,38 +1,93 @@
-.App {
-  text-align: center;
+.App{
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+    align-items: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+  
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+  
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+div.leaflet-marker-icon > div > span{
+    font-size: 1.5em;
+    font-weight:bold;
+    color: rgb(0, 0, 0);
+    text-shadow: 
+        -1px -1px 0px #fff,
+         0px -1px 0px #fff,
+         1px -1px 0px #fff,
+        -1px  0px 0px #fff,
+         1px  0px 0px #fff,
+        -1px  1px 0px #fff,
+         0px  1px 0px #fff,
+         1px  1px 0px #fff;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.marker-cluster{
+  filter: invert(100%) hue-rotate(180deg);
+  background-color: #f59957;
 }
 
-.App-link {
-  color: #61dafb;
+.leaflet-popup-close-button{
+  color: #f97316!important;
+  font-size: 3.4em!important;
+  margin-right: 5px!important;
+  margin-top: 5px!important;
+  padding-top: 4px;
+  width: 40px!important;
+  height: 40px!important;
+  border-radius: 8px!important;
+    cursor: pointer;
+    transition-duration: 0.25s;
+}
+.leaflet-popup-close-button:hover {
+  background-color: #f97316!important;
+  color: #000000!important;
+
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.groups{
+  scrollbar-color: #f97316 transparent;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable
+
+}
+
+
+button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #1a1a1a;
+    cursor: pointer;
+    transition-duration: 0.25s;
   }
-  to {
-    transform: rotate(360deg);
+  button:hover {
+    background-color: #f97316;
+    color: #000000;
   }
-}
+  button:focus,
+  button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+    outline-color: #f97316;
+  }
