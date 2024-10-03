@@ -1,12 +1,12 @@
-import getPlaceName from "./getPlaceName";
-
-
-export default function jsonToPlaces(json, filter) {
+export default function jsonToPlaces(json, activeCourts, onlyActive) {
 
 
     let idsSet
-    if (filter) {
-        idsSet = new Set(filter.map(item => parseInt(item.courtId)));
+    if (activeCourts) {
+        idsSet = new Set(activeCourts.map(item => parseInt(item.courtId)));
+        console.log(idsSet);
+    } else {
+        idsSet = false
     }
 
     const uniqueCourts = {};
@@ -16,13 +16,15 @@ export default function jsonToPlaces(json, filter) {
 
         const key = `${Math.round((latitude + Number.EPSILON) * 10000) / 10000},${Math.round((longitude + Number.EPSILON) * 10000) / 10000}`;
         // Check if this center point has been encountered before
-        if (!uniqueCourts[key] && !(idsSet?!idsSet.has(element.id):false)) {
+        var active = idsSet ? idsSet.has(element.id) ? true : false : false
+        if (!uniqueCourts[key] && (!onlyActive || active)) {
             uniqueCourts[key] = element;  // Keep the one with the highest ID
             return {
                 id: element.id,
                 name: typeof element.tags.name !== 'undefined' ? element.tags.name : null,//getPlaceName(latitude, longitude),
                 longitude,
                 latitude,
+                active
             }
         }
         else {
@@ -31,11 +33,13 @@ export default function jsonToPlaces(json, filter) {
                 name: null,//getPlaceName(latitude, longitude),
                 longitude: 0,
                 latitude: 0,
+                active: false
             }
         }
     });
 
-    //console.log(places);
+    // var activeplaces= new Set(places.map((place) => place.active))
+    // console.log(activeplaces.has(true));
 
     return places
 }

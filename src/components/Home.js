@@ -4,6 +4,8 @@ import Route from "./Route";
 import { useContext, useState } from 'react';
 import NavigationContext from '../context/Navigation';
 import Map from './Map.js';
+//import toast, {Toaster} from 'svelte-french-toast'
+
 
 function Home() {
 
@@ -18,7 +20,7 @@ function Home() {
 
     return (
         <div className="Main">
-
+{/* <Toaster /> */}
             <Route path={`/login`}>
                 <Account route={'login'} />
             </Route>

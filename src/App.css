@@ -62,13 +62,17 @@ div.leaflet-marker-icon > div > span{
   color: #000000!important;
 
 }
+.leaflet-bar >a{
+  background-color: #d4e6ff!important;
+  border: 1px solid #f97316!important;
+}
 
 .groups{
   scrollbar-color: #f97316 transparent;
   scrollbar-width: thin;
   scrollbar-gutter: stable
-
 }
+
 
 
 button {
@@ -85,9 +89,4 @@ button {
   button:hover {
     background-color: #f97316;
     color: #000000;
-  }
-  button:focus,
-  button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
-    outline-color: #f97316;
   }

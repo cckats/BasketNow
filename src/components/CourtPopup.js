@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Popup, useMap } from 'react-leaflet';
 import './CourtPopup.css'
 import { useFetchCourtQuery, useMarkCourtMutation, useAddCourtMutation, useFetchCourtBallersQuery } from '../store'
@@ -6,6 +6,8 @@ import { GoChevronDown, GoChevronRight } from "react-icons/go"
 import getPlaceName from '../hooks/getPlaceName';
 import CheckIn from './CheckIn';
 import JoinIn from './JoinIn';
+
+import L from 'leaflet';
 import { MdRefresh } from 'react-icons/md';
 
 
@@ -28,6 +30,35 @@ function CourtPopup({ id, inName, lat, lng }) {
       setName(await getPlaceName(lat, lng))
     }
   })
+  const map = useMap();
+   //const elementRef = useRef();
+  // useEffect(() => {
+  //   if (!elementRef.current) return;
+  //   const resizeObserver = new ResizeObserver(() => {
+  //     map.panBy(L.point(0,-elementRef.current.clientHeight/2), { animate: false }); 
+   
+
+  //   });
+  //   resizeObserver.observe(elementRef.current);
+  //   return () => resizeObserver.disconnect(); // clean up 
+  // }, [])
+  // const [height, setHeight] = useState(0);
+
+  // const measuredRef = useCallback(node => { 
+  //   if (node !== null) { 
+  //     setHeight(node.getBoundingClientRect().height); 
+  //   } }, []);
+
+  //   measuredRef()
+  //   console.log(height);
+  // const elementRef = useCallback(node => {
+  //   if (!node) return;
+  //   const resizeObserver = new ResizeObserver(() => {
+  //     map.panBy(L.point(0, -elementRef.current.clientHeight / 2), { animate: false });
+  //     console.log(elementRef.current.clientHeight);
+  //   });
+  //   resizeObserver.observe(node);
+  // }, []);
 
   useEffect(() => {
     getNewPlaceName();
@@ -50,13 +81,13 @@ function CourtPopup({ id, inName, lat, lng }) {
     }
   })
 
-
-  const map = useMap();
   map.on('popupopen resize', function (e) {
-    var px = map.project(e.target._popup._latlng); // find the pixel location on the map where the popup anchor is
-    px.y -= e.target._popup._container.clientHeight / 2 + 50; // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
-    map.panTo(map.unproject(px), { animate: true }); // pan to new center
-  });
+          var px = map.project(e.target._popup._latlng); // find the pixel location on the map where the popup anchor is
+          px.y -= e.target._popup._container.clientHeight / 2 + 130; // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
+          map.panTo(map.unproject(px), { animate: true }); // pan to new center
+          console.log(px);
+        });
+
 
 
   if (courtIsFetching || ballersIsFetching) {
@@ -115,6 +146,8 @@ function CourtPopup({ id, inName, lat, lng }) {
       elapsed = new Date(Date.now() - timeMarked)
       day = 86400000
     }
+    //if(typeof elementRef.current !== "undefined"){
+    //  console.log(elementRef.current.clientHeight);}
     content =
       <div className='text-white flex flex-col '>
         <h1 className='font-bold text-xl text-wrap pb-3 px-2 text-center'>{name ? name : "Basketball Court"}</h1>

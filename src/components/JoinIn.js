@@ -26,7 +26,7 @@ function JoinIn({ group, setJoinInOpen }) {
     }
 
     return (<>
-        <button className="p-1 pr-2 mb-2 col-span-1 flex justify-start items-center rounded border border-orange-500"
+        <button className="w-max p-1 pr-2 col-span-1 flex justify-start items-center rounded border border-orange-500"
             onClick={() => setJoinInOpen(false)}>
             <GoChevronLeft className="inline text-xl" />Back
         </button>

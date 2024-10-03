@@ -5,16 +5,22 @@ import jsonToPlaces from "../hooks/json-to-places";
 import L from 'leaflet';
 import { useFetchActiveCourtsIDQuery } from "../store";
 import { ballersApi } from "../store/apis/ballersApi";
-import { MdRefresh } from "react-icons/md";
+import { MdRefresh, MdGpsNotFixed } from "react-icons/md";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
-function SearchArea({ zoomLimit, updateSearchArea }) {
+function SearchArea({ zoomLimit, updateSearchArea, userLocation }) {
 
   const [searchArea, setSearchArea] = useState([0, 0, 0, 0])
   const [showSearch, setShowSearch] = useState(false)
   const [showZoom, setShowZoom] = useState(false)
-  const [activechecked, setActiveChecked] = useState(false);
-  const { data: activeCourts, error, isFetching, refetch } = useFetchActiveCourtsIDQuery();
+  const [onlyactivechecked, setOnlyActivechecked] = useState(false);
+  const { data: activeCourts, error, isFetching, refetch } = useFetchActiveCourtsIDQuery('',
+    {
+      pollingInterval: 3000,
+      skipPollingIfUnfocused: true,
+    });
   const [overpassData, setOverpassData] = useState({})
   const [searchRect, setSearchRect] = useState(null)
 
@@ -27,9 +33,12 @@ function SearchArea({ zoomLimit, updateSearchArea }) {
       setShowZoom(true);
     else {
       setShowSearch(true)
+      if (isFetching) {
+        console.log('fetching');
+      }
+      else { handleSearchArea() }
     }
-
-  }, [])
+  }, [activeCourts])
 
 
   useMapEvent('move', () => {
@@ -72,7 +81,7 @@ function SearchArea({ zoomLimit, updateSearchArea }) {
       },
     });
     setOverpassData(overpassResponse)
-    activechecked ? updateSearchArea(jsonToPlaces(overpassResponse, activeCourts)) : updateSearchArea(jsonToPlaces(overpassResponse));
+    updateSearchArea(jsonToPlaces(overpassResponse, activeCourts, onlyactivechecked));
     setShowSearch(false);
 
     const newRectangle = L.rectangle(bounds, { fill: false, color: "#ff7800", weight: 1 });
@@ -88,45 +97,67 @@ function SearchArea({ zoomLimit, updateSearchArea }) {
   });
 
   const handleZoomClick = () => {
-    map.setZoom(zoomLimit)
+    map.setZoom(zoomLimit, { animate: true, duration: 2.5 })
   }
 
 
   const handleActiveChange = () => {
     refetch()
-    if (searchArea[0])
-      !activechecked ? updateSearchArea(jsonToPlaces(overpassData, activeCourts)) : updateSearchArea(jsonToPlaces(overpassData));
-    setActiveChecked(!activechecked);
-  };
+    if (searchArea[0]) {
+      var AreaActiveCourts = jsonToPlaces(overpassData, activeCourts, !onlyactivechecked)
+      var activeplaces = new Set(AreaActiveCourts.map((place) => place.active))
+      if (activeplaces.has(true)) {
+        updateSearchArea(AreaActiveCourts)
+        setOnlyActivechecked(!onlyactivechecked);
+      } else {
+        toast.error('No Active Courts in this area today', {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark"
+        });
+      }
+    }
+  }
+
   const handleRefetch = () => {
     refetch()
     if (searchArea[0])
-      setActiveChecked(true)
-      updateSearchArea(jsonToPlaces(overpassData, activeCourts))
-    
+      updateSearchArea(jsonToPlaces(overpassData, activeCourts, false))
+  };
+  const handleRecenter = () => {
+    map.flyTo(userLocation,14,{duration:0.5})
   };
 
-  return (<div className='z-[5000] flex flex-col relative w-full h-full p-2 items-center justify-between pointer-events-none'>
-    <div>
-      {showSearch ?
-        <button onClick={handleSearchArea}
-          className='p-2 font-bold text-xl rounded-xl bg-gray-800 border-2 border-orange-500 pointer-events-auto' >
-          Search this area
-        </button> : <></>}
-      {showZoom ?
-        <button onClick={handleZoomClick}
-          className='p-2 font-bold text-xl rounded-xl bg-gray-800 border-2 border-orange-500 pointer-events-auto' >
-          Zoom in to search
-        </button> : <></>}
+  return (<>
+    <ToastContainer />
+    <div className='z-[5000] flex flex-col relative w-full h-full p-2 items-center justify-between pointer-events-none'>
+      <div>
+        {showSearch ?
+          <button onClick={handleSearchArea}
+            className='p-2 font-bold text-xl rounded-xl bg-gray-800 border-2 border-orange-500 pointer-events-auto' >
+            Search this area
+          </button> : <></>}
+        {showZoom ?
+          <button onClick={handleZoomClick}
+            className='p-2 font-bold text-xl rounded-xl bg-gray-800 border-2 border-orange-500 pointer-events-auto' >
+            Zoom in to search
+          </button> : <></>}
+      </div>
+      <div className="font-bold text-l flex items-center gap-2 pointer-events-auto">
+        <label className="p-2 cursor-pointer rounded-xl flex items-center hover:text-orange-500 duration-100 bg-gray-800 border-2 border-orange-500">
+          <input className="m-1 duration-100 text-xl" type="checkbox" onChange={handleActiveChange} checked={onlyactivechecked} />
+          See Only Active Courts
+        </label>
+        <button className="p-2 text-xl bg-gray-800 border-2 border-orange-500" onClick={handleRefetch}><MdRefresh /></button>
+        {userLocation ? <button className="p-2 text-xl bg-gray-800 border-2 border-orange-500" onClick={handleRecenter}><MdGpsNotFixed /></button> : <></>}
+      </div>
     </div>
-    <div className="rounded font-bold text-l flex items-center bg-gray-800 border-2 border-orange-500 pointer-events-auto">
-      <label className="cursor-pointer rounded flex items-center hover:text-orange-500 duration-100 ">
-        <input className="m-1 duration-100 text-xl" type="checkbox" onChange={handleActiveChange} checked={activechecked} />
-        See Only Active Courts
-      </label>
-      <button className="ml-2 m-1 p-1 text-xl" onClick={handleRefetch}><MdRefresh /></button>
-    </div>
-  </div>);
+  </>);
 }
 
 export default SearchArea

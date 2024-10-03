@@ -44,7 +44,7 @@ function CheckIn({ courtId, setcheckInOpen }) {
             <input className=" p-1 rounded border border-orange-500" type="number"
                 onChange={(e) => { setPlayersNeeded(e.target.value) }} value={playersNeeded} placeholder={0} min={0} max={10}></input>
 
-            <label className=" pt-3 col-span-2 row-span-1 text-center font-bold text-xl ">Time</label>
+            <label className=" pt-1 col-span-2 row-span-1 text-center font-bold text-xl ">Time</label>
             <label className="p-1 font-bold "> From:</label>
             <input className=" ml-2 p-1 rounded border border-orange-500" type="time"
                 onChange={(e) => { setTimeFrom(e.target.value) }} value={timeFrom} required></input>
