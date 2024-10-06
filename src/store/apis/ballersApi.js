@@ -5,6 +5,7 @@ const ballersApi = createApi({
     reducerPath: 'ballers',
     baseQuery: fetchBaseQuery({
         baseUrl: 'https://katserver.ddns.net/basketnow/api',
+        //baseUrl: 'http://localhost:4005',
     }),
     endpoints(builder) {
         return {
@@ -40,16 +41,17 @@ const ballersApi = createApi({
                         method: 'GET',
                     };
                 },
-                transformResponse: (response, meta, arg) => {
-                    var tdate = new Date(Date.now())
-                    var today = `${tdate.getUTCDate()}${tdate.getUTCMonth()}`
-                    var data =[]
-                    response.map((group) => {
-                        if (group.date === today)
-                            data.push(group)
-                    })
-                    return data;
-                },
+                // Enable with JSON
+                // transformResponse: (response, meta, arg) => {
+                //     var tdate = new Date(Date.now())
+                //     var today = `${tdate.getUTCDate()}${tdate.getUTCMonth()}`
+                //     var data =[]
+                //     response.map((group) => {
+                //         if (group.date === today)
+                //             data.push(group)
+                //     })
+                //     return data;
+                // },
             }),
             addBallers: builder.mutation({
                 invalidatesTags: (results, error, ballers) => {

@@ -5,7 +5,7 @@ import jsonToPlaces from "../hooks/json-to-places";
 import L from 'leaflet';
 import { useFetchActiveCourtsIDQuery } from "../store";
 import { ballersApi } from "../store/apis/ballersApi";
-import { MdRefresh, MdGpsNotFixed } from "react-icons/md";
+import { MdRefresh, MdGpsNotFixed, MdGpsFixed } from "react-icons/md";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -18,11 +18,13 @@ function SearchArea({ zoomLimit, updateSearchArea, userLocation }) {
   const [onlyactivechecked, setOnlyActivechecked] = useState(false);
   const { data: activeCourts, error, isFetching, refetch } = useFetchActiveCourtsIDQuery('',
     {
-      pollingInterval: 3000,
+      pollingInterval: 15000,
       skipPollingIfUnfocused: true,
     });
   const [overpassData, setOverpassData] = useState({})
   const [searchRect, setSearchRect] = useState(null)
+  const [refeching, setRefeching] = useState(false)
+  const [centered, setCentered] = useState(userLocation ? true : false)
 
 
   const map = useMap(); // Use map instance to get bounds
@@ -40,28 +42,27 @@ function SearchArea({ zoomLimit, updateSearchArea, userLocation }) {
     }
   }, [activeCourts])
 
+  useEffect(() => {
+    if (isFetching) {
+      setRefeching(true)
+      setTimeout(() => {
+        setRefeching(false);
+      }, 500);
+    }
+  }, [isFetching])
+
 
   useMapEvent('move', () => {
     const bounds = map.getBounds();
     const SouthWest = bounds.getSouthWest();
     const NorthEast = bounds.getNorthEast();
-    var change = 0.1;
     var bottom = searchArea[0] - SouthWest.lat;
     var left = searchArea[1] - SouthWest.lng;
     var top = searchArea[2] - NorthEast.lat;
     var right = searchArea[3] - NorthEast.lng;
-    if (bottom < 0 && left < 0 && top > 0 && right > 0) var inside = true; else var inside = false;
-    //if (bottom > 0 && left > 0 && top < 0 && right < 0) var outside = true; else var outside = false;
-    if (
-      // (Math.abs(bottom) > change ||
-      // Math.abs(left) > change ||
-      // Math.abs(top) > change ||
-      // Math.abs(right) > change) &&
-      map.getZoom() >= zoomLimit &&
-      !inside) {
+    if (map.getZoom() >= zoomLimit && !(bottom < 0 && left < 0 && top > 0 && right > 0)) {
       setShowSearch(true); // Show the button after map stops moving
-    }
-    else {
+    } else {
       setShowSearch(false);
     }
   })
@@ -124,14 +125,22 @@ function SearchArea({ zoomLimit, updateSearchArea, userLocation }) {
     }
   }
 
+
   const handleRefetch = () => {
     refetch()
     if (searchArea[0])
       updateSearchArea(jsonToPlaces(overpassData, activeCourts, false))
   };
+
   const handleRecenter = () => {
-    map.flyTo(userLocation,14,{duration:0.5})
+    map.flyTo(userLocation, 14, { duration: 0.5 })
+    setCentered(true)
   };
+  useMapEvent('moveend', () => {
+    if (typeof userLocation !== "undefined")
+      if (map.getCenter().distanceTo(userLocation) > 10)
+        setCentered(false)
+  })
 
   return (<>
     <ToastContainer />
@@ -153,8 +162,10 @@ function SearchArea({ zoomLimit, updateSearchArea, userLocation }) {
           <input className="m-1 duration-100 text-xl" type="checkbox" onChange={handleActiveChange} checked={onlyactivechecked} />
           See Only Active Courts
         </label>
-        <button className="p-2 text-xl bg-gray-800 border-2 border-orange-500" onClick={handleRefetch}><MdRefresh /></button>
-        {userLocation ? <button className="p-2 text-xl bg-gray-800 border-2 border-orange-500" onClick={handleRecenter}><MdGpsNotFixed /></button> : <></>}
+        <button className="p-2 text-xl bg-gray-800 border-2 border-orange-500" onClick={handleRefetch}>
+          <MdRefresh className={refeching ? "loading-icon" : ''} />
+        </button>
+        {userLocation ? <button className="p-2 text-xl bg-gray-800 border-2 border-orange-500" onClick={handleRecenter}>{centered ? <MdGpsFixed /> : <MdGpsNotFixed />}</button> : <></>}
       </div>
     </div>
   </>);

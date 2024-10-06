@@ -31,6 +31,8 @@ const response = await axios.get('https://overpass-api.de/api/interpreter', {
     }
   })
 
+  console.log(outName);
+
   return outName
   
 };

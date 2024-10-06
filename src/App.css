@@ -19,30 +19,36 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-.leaflet-layer,
-.leaflet-control-zoom-in,
-.leaflet-control-zoom-out,
-.leaflet-control-attribution {
+
+
+.leaflet-layer {
   filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }
+.leaflet-control-attribution{
+  filter: invert(100%);
+  padding-right:15px;
+}
+
 div.leaflet-marker-icon > div > span{
     font-size: 1.5em;
     font-weight:bold;
-    color: rgb(0, 0, 0);
+    color: #fff;
     text-shadow: 
-        -1px -1px 0px #fff,
-         0px -1px 0px #fff,
-         1px -1px 0px #fff,
-        -1px  0px 0px #fff,
-         1px  0px 0px #fff,
-        -1px  1px 0px #fff,
-         0px  1px 0px #fff,
-         1px  1px 0px #fff;
+        -1px -1px 0px #000,
+         0px -1px 0px #000,
+         1px -1px 0px #000,
+        -1px  0px 0px #000,
+         1px  0px 0px #000,
+        -1px  1px 0px #000,
+         0px  1px 0px #000,
+         1px  1px 0px #000;
 }
 
 .marker-cluster{
-  filter: invert(100%) hue-rotate(180deg);
-  background-color: #f59957;
+  background-color: #f97316;
+}
+.marker-cluster div {
+  background-color: rgb(47, 49, 56)!important;
 }
 
 .leaflet-popup-close-button{
@@ -63,8 +69,9 @@ div.leaflet-marker-icon > div > span{
 
 }
 .leaflet-bar >a{
-  background-color: #d4e6ff!important;
+  background-color: #2a3341!important;
   border: 1px solid #f97316!important;
+  color: #fff!important;
 }
 
 .groups{
@@ -73,7 +80,18 @@ div.leaflet-marker-icon > div > span{
   scrollbar-gutter: stable
 }
 
+.loading-icon {
+  animation: animate 0.5s infinite;
+}
 
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 button {
     border-radius: 8px;

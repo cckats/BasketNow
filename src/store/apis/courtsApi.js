@@ -5,6 +5,7 @@ const courtsApi = createApi({
     reducerPath: 'courts',
     baseQuery: fetchBaseQuery({
         baseUrl: 'https://katserver.ddns.net/basketnow/api',
+        //baseUrl: 'http://localhost:4005',
     }),
     endpoints(builder) {
         return {
@@ -32,7 +33,10 @@ const courtsApi = createApi({
                         method: 'POST',
                         body: {
                             id: court.id,
-                            markedFull: court.markedFull
+                            markedFull: court.markedFull,
+                            name: court.name ? court.name : '',
+                            lat: court.lat ? court.lat : '',
+                            lng: court.lng ? court.lng : '',
                         },
                     };
                 },

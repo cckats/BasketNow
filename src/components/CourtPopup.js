@@ -26,17 +26,29 @@ function CourtPopup({ id, inName, lat, lng }) {
   const [name, setName] = useState(inName);
 
   const getNewPlaceName = (async () => {
+    console.log('search name');
     if (!name) {
       setName(await getPlaceName(lat, lng))
     }
   })
+
   const map = useMap();
-   //const elementRef = useRef();
+  useEffect(() => {
+    map.on('popupopen resize', function (e) {
+      var px = map.project(e.target._popup._latlng); // find the pixel location on the map where the popup anchor is
+      px.y -= e.target._popup._container.clientHeight / 2 + 130; // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
+      map.panTo(map.unproject(px), { animate: true }); // pan to new center
+      //console.log(px);
+    });
+  }, [])
+
+
+  //const elementRef = useRef();
   // useEffect(() => {
   //   if (!elementRef.current) return;
   //   const resizeObserver = new ResizeObserver(() => {
   //     map.panBy(L.point(0,-elementRef.current.clientHeight/2), { animate: false }); 
-   
+
 
   //   });
   //   resizeObserver.observe(elementRef.current);
@@ -60,18 +72,14 @@ function CourtPopup({ id, inName, lat, lng }) {
   //   resizeObserver.observe(node);
   // }, []);
 
-  useEffect(() => {
-    getNewPlaceName();
-  }, [name])
-
-
 
   const handleMarkClick = (() => {
     let court = {
       id: id.toString(),
       markedFull: new Date().toJSON(),
-      players: " Unknown",
-      playersNeeded: " Unknown"
+      name,
+      lat,
+      lng
     }
     if (courtData[0]) {
       markCourt(court);
@@ -81,12 +89,7 @@ function CourtPopup({ id, inName, lat, lng }) {
     }
   })
 
-  map.on('popupopen resize', function (e) {
-          var px = map.project(e.target._popup._latlng); // find the pixel location on the map where the popup anchor is
-          px.y -= e.target._popup._container.clientHeight / 2 + 130; // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
-          map.panTo(map.unproject(px), { animate: true }); // pan to new center
-          console.log(px);
-        });
+ 
 
 
 
@@ -98,23 +101,26 @@ function CourtPopup({ id, inName, lat, lng }) {
   }
   else {
 
-    console.log(courtData);
+    //console.log(courtData);
 
     let court
     if (courtData[0]) {
       court = courtData[0]
-    }
-    else {
+      if (court.name && !name) {
+        setName(court.name)
+      }
+    } else {
+      getNewPlaceName();
       court = {
         markedFull: null,
       }
     }
 
     let ballers
-    console.log(ballersData);
+    //console.log(ballersData);
     if (ballersData[0]) {
       ballers = ballersData
-      console.log(ballers);
+      //console.log(ballers);
 
     }
     else {
@@ -150,10 +156,10 @@ function CourtPopup({ id, inName, lat, lng }) {
     //  console.log(elementRef.current.clientHeight);}
     content =
       <div className='text-white flex flex-col '>
-        <h1 className='font-bold text-xl text-wrap pb-3 px-2 text-center'>{name ? name : "Basketball Court"}</h1>
+        <h1 className='font-bold text-xl text-wrap pb-3 px-3 text-center'>{name ? name : "Basketball Court"}</h1>
         <div>
           {court.markedFull && elapsed <= day
-            ? <h2 className='mb-3 text-center'>Marked <span className='font-bold text-l my-2'>{status}</span>: {elapsed.getUTCHours() ? `${elapsed.getUTCHours()}hrs` : ''} {elapsed.getMinutes()}min ago
+            ? <h2 className='mb-3 text-center'>Marked <span className='font-bold text-l my-2'>{status}</span>: {elapsed.getUTCHours() ? `${elapsed.getUTCHours()}hr` : ''} {elapsed.getMinutes()}min ago
             </h2> : ''}
           <div className='groups max-h-[225px] overflow-y-scroll mb-3 scroll-p-0 flex flex-col ml-2'>
             {ballers[0] ? ballers.map((group, index) => {

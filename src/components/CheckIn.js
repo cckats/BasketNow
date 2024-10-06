@@ -36,7 +36,7 @@ function CheckIn({ courtId, setcheckInOpen }) {
         <form onSubmit={handleSubmit} className="text-white text-l grid grid-rows-3 gap-2 mt-2 p-1">
             <label className=" grid col-span-1 p-1 font-bold text-l flex self-center"> Name:</label>
             <input className="grid p-1 text-l rounded border border-orange-500" type="text" placeholder="No name"
-                onChange={(e) => { setGroupName(e.target.value) }} value={groupName} minlength="4" maxlength="10" size="11" ></input>
+                onChange={(e) => { setGroupName(e.target.value) }} value={groupName} minLength="4" maxLength="10" size="11" ></input>
             <label className=" grid col-span-1 p-1 font-bold text-l flex self-center"> Players</label>
             <input className="grid p-1 text-l rounded border border-orange-500" type="number"
                 onChange={(e) => { setPlayers(e.target.value) }} value={players} min={1} max={10}></input>

@@ -3,8 +3,8 @@ export default function jsonToPlaces(json, activeCourts, onlyActive) {
 
     let idsSet
     if (activeCourts) {
-        idsSet = new Set(activeCourts.map(item => parseInt(item.courtId)));
-        console.log(idsSet);
+        idsSet = new Set(activeCourts.map(item => parseInt(item)));
+        //console.log(idsSet);
     } else {
         idsSet = false
     }
