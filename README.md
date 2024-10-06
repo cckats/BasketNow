@@ -49,7 +49,7 @@ To run the API server locally you can use JSON Server by changing the APIs baseU
 
 
 ## 📋 Roadmap
-Roadmap can be found [here](https://trello.com/b/O40EcFGc2486)
+Roadmap can be found [here](https://trello.com/b/O40EcFGc)
 
 ## 🔗 Links
 
